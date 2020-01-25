@@ -3,7 +3,9 @@ import { View, StyleSheet, Text, ImageBackground } from 'react-native';
 import { Input, Button } from 'react-native-elements';
 import InputRound from './../components/input-round';
 
-export interface AppProps {}
+export interface AppProps {
+    navigation: any;
+}
 
 //Interface que define quais valores o state pode receber
 export interface AppState {
@@ -19,7 +21,7 @@ export default class LoginScreen extends React.Component<AppProps, AppState> {
   /**Função responsável por fazer o login do usuário */
   public logar() {
     if(this.state.email.trim() == 'teste@teste.com' && this.state.senha == '123456')
-      console.log('Logado com sucesso');
+        this.props.navigation.navigate('home', {email: this.state.email});
     else 
       console.log ('Email ou senha incorreta!');
   }
