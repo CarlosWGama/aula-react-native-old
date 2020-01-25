@@ -5,14 +5,16 @@ import { Button, Input, Image } from 'react-native-elements';
 // import DatePicker from 'react-native-datepicker'
 import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from 'moment'
+import Tarefa from '../models/tarefa';
 
 export interface AppProps {
     navigation:any;
 }
 
 export interface AppState { 
-    exibirCalendario: boolean,
-    data:Date
+    exibirCalendario: boolean;
+    data:Date;
+    tarefa:Tarefa;
 }
 
 /**
@@ -21,9 +23,11 @@ export interface AppState {
 export default class TarefaEdicaoScreen extends React.Component<AppProps, AppState> {
   constructor(props: AppProps) {
     super(props);
+    const tarefa = this.props.navigation.getParam('tarefa', new Tarefa('', ''))
     this.state = { 
         exibirCalendario: false,
-        data: new Date()
+        data: moment(tarefa.data ? tarefa.data : new Date(), 'DD/MM/YYYY').toDate(),
+        tarefa:tarefa
     };
   }
 
@@ -41,6 +45,7 @@ export default class TarefaEdicaoScreen extends React.Component<AppProps, AppSta
     if (date != undefined) {
         this.setState({
             data:date,
+            tarefa: {...this.state.tarefa, data:moment(date).format('DD/MM/YYYY')},
             exibirCalendario: false
         })
     }
@@ -48,7 +53,7 @@ export default class TarefaEdicaoScreen extends React.Component<AppProps, AppSta
 
   public render() {
     //Define se o titulo será de Cadastro (Caso não receba ID) ou de Edição (caso receba o id de uma tarefa para editar)
-    const titulo = (this.props.navigation.getParam('id', null) == null ? 'Cadastrar ' : 'Editar ') + "Tarefa"; 
+    const titulo = (this.state.tarefa.id == null ? 'Cadastrar ' : 'Editar ') + "Tarefa"; 
     return (
         <View style={styles.container}>
             <Toolbar titulo={titulo} navigation={this.props.navigation} back />
@@ -57,7 +62,7 @@ export default class TarefaEdicaoScreen extends React.Component<AppProps, AppSta
 
               <Text>Descrição</Text>
               <TouchableOpacity onPress={() => this.setState({exibirCalendario:true})}>
-                  <Input placeholder="Digite uma descrição" onChangeText={(descricao) => console.log(descricao)}></Input>
+                  <Input placeholder="Digite uma descrição" value={this.state.tarefa.descricao} onChangeText={(descricao) => this.setState({tarefa:{...this.state.tarefa, descricao}})}></Input>
               </TouchableOpacity>
 
               <Text>Data</Text>

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
+import { View, Text, Button, StyleSheet, Alert } from 'react-native';
 import { Toolbar } from '../components/toolbar';
 import { Fab } from '../components/fab';
 import Tarefa from '../models/tarefa';
@@ -30,6 +30,19 @@ export default class HomeScreen extends React.Component<AppProps, AppState> {
     };
   }
 
+  /**
+   * Função que Exclui um item da lista
+   * @param id 
+  */
+  public excluir(id) {
+    Alert.alert('Excluir Tarefa', 'Deseja realmente excluir essa tarefa?', [
+      {text:'Sim', onPress:() => {
+        console.log('Excluindo o Item');
+      }},
+      {text: 'Não'}
+    ]);
+  }
+
   /** Rederiza a tela */
   public render() {
     return (
@@ -42,7 +55,7 @@ export default class HomeScreen extends React.Component<AppProps, AppState> {
                 extraData={this.state.tarefas}
                 keyExtractor={(t) => t.id}
                 renderItem={({item}) => (
-                    <ItemTarefa tarefa={item} onEditar={(tarefa)=>this.props.navigation.navigate('tarefaEdicao', {tarefa})} onExcluir={(id)=>console.log(id)}/>
+                    <ItemTarefa tarefa={item} onEditar={(tarefa)=>this.props.navigation.navigate('tarefaEdicao', {tarefa})} onExcluir={(id)=>this.excluir(id)}/>
                 )}    
               /> 
           {/* LISTA DE TAREFAS [FIM] */}

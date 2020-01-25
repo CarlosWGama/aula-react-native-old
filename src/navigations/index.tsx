@@ -4,6 +4,6 @@ import LoginScreen from '../screen/login';
 
 const navigation = createSwitchNavigator({
     login: LoginScreen, home: DrawerMenu 
-}, { initialRouteName: 'home'})
+}, { initialRouteName: 'login'})
 
 export default createAppContainer(navigation);
