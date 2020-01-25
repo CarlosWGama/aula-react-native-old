@@ -1,7 +1,9 @@
 import * as React from 'react';
 import { View, StyleSheet, Text } from 'react-native';
+import { Toolbar } from '../../components/toolbar';
 
-export interface AppProps {
+export interface AppProps { 
+    navigation:any;
 }
 
 export interface AppState {
@@ -16,9 +18,13 @@ export default class ConfigGeralScreen extends React.Component<AppProps, AppStat
 
   public render() {
     return (
-      <View style={styles.container}>
-         <Text>Tela de Configurações - Geral</Text>
-      </View>
+        <View>
+            <Toolbar titulo="Configurações Gerais"  navigation={this.props.navigation} menu/>
+            <View style={styles.container}>
+                <Text>Tela de Configurações - Geral</Text>
+            </View>
+        </View>
+      
     );
   }
 }
@@ -26,6 +32,7 @@ export default class ConfigGeralScreen extends React.Component<AppProps, AppStat
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        padding: 5,
         justifyContent:'center',
         alignItems: 'center',
     }

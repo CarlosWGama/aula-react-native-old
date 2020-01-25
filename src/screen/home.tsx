@@ -1,5 +1,7 @@
 import * as React from 'react';
-import { View, Text, Button } from 'react-native';
+import { View, Text, Button, StyleSheet } from 'react-native';
+import { Toolbar } from '../components/toolbar';
+import { Fab } from '../components/fab';
 
 export interface AppProps {
     navigation: any; 
@@ -20,11 +22,17 @@ export default class HomeScreen extends React.Component<AppProps, AppState> {
   /** Rederiza a tela */
   public render() {
     return (
-      <View>
-         <Text>Email:{this.props.navigation.getParam('email')}</Text>
-         <Button onPress={() => this.props.navigation.navigate('tarefaEdicao')} title="Tarefa" />
+      <View style={styles.container}>
+          <Toolbar titulo="Home" navigation={this.props.navigation} menu={true} />
+          <Fab onPress={() => this.props.navigation.navigate('tarefaEdicao')} />
       </View>
     );
   }
 }
 
+const styles = StyleSheet.create({
+    container: {
+      flex:1
+    }
+  });
+  
