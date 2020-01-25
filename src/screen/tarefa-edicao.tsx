@@ -8,6 +8,7 @@ import moment from 'moment'
 import Tarefa from '../models/tarefa';
 import * as Permissions from 'expo-permissions';
 import * as ImagePicker from 'expo-image-picker';
+import { TarefasProvider } from '../providers/tarefas';
 
 export interface AppProps {
     navigation:any;
@@ -23,12 +24,16 @@ export interface AppState {
  * Tela responsável cadastrar e editar tarefas cadastradas pelo usuário
  */
 export default class TarefaEdicaoScreen extends React.Component<AppProps, AppState> {
+
+  private tarefaProvider = new TarefasProvider();
+
   constructor(props: AppProps) {
     super(props);
     const tarefa = this.props.navigation.getParam('tarefa', new Tarefa('', ''))
+    if (!tarefa.data) tarefa.data = moment().format('DD/MM/YYYY') 
     this.state = { 
         exibirCalendario: false,
-        data: moment(tarefa.data ? tarefa.data : new Date(), 'DD/MM/YYYY').toDate(),
+        data: moment(tarefa.data, 'DD/MM/YYYY').toDate(),
         tarefa:tarefa
     };
   }
@@ -68,8 +73,16 @@ export default class TarefaEdicaoScreen extends React.Component<AppProps, AppSta
 
   /** Função responsável por salvar as modificações na tarefa */
   salvar() {
+    let {tarefa} = this.state;
+    
+    if (!this.state.tarefa.id) //Cadastrando  
+      this.tarefaProvider.cadastrar(tarefa);
+    else //Atualizando
+      this.tarefaProvider.editar(tarefa);
+
     this.props.navigation.goBack();
   }
+
   /** Recupera a data do calendário e salva no estado */
   guardaData(event, date) {
 

@@ -5,6 +5,7 @@ import { Fab } from '../components/fab';
 import Tarefa from '../models/tarefa';
 import { ItemTarefa } from '../components/item-tarefa';
 import { FlatList } from 'react-native-gesture-handler';
+import { TarefasProvider } from '../providers/tarefas';
 
 export interface AppProps {
     navigation: any; 
@@ -20,14 +21,22 @@ export interface AppState {
  * Essa tela irá listar todas tarefas cadastradas pelo usuário
  */
 export default class HomeScreen extends React.Component<AppProps, AppState> {
+
+  private tarefasProvider = new TarefasProvider();
+
   constructor(props: AppProps) {
     super(props);
     this.state = { 
-      tarefas: [new Tarefa('Tarefa 1', '07/07/2019', '1'),
-               new Tarefa('Tarefa 2', '07/07/2019', '2'),
-               new Tarefa('Tarefa 3', '07/07/2019', '3')
-              ]
+      tarefas: []
     };
+  }
+
+  /** Função chamada assim que a página é criadda pela primeira vez */
+  componentDidMount() {
+    //Listener que é chamado sempre que a página sendo exibida
+    this.props.navigation.addListener('didFocus', () => {
+      this.tarefasProvider.buscarTodos().then(tarefas => this.setState({tarefas}));
+    })
   }
 
   /**
@@ -37,7 +46,9 @@ export default class HomeScreen extends React.Component<AppProps, AppState> {
   public excluir(id) {
     Alert.alert('Excluir Tarefa', 'Deseja realmente excluir essa tarefa?', [
       {text:'Sim', onPress:() => {
-        console.log('Excluindo o Item');
+        console.log(id);
+        this.tarefasProvider.excluir(id);
+        this.tarefasProvider.buscarTodos().then(tarefas => this.setState({tarefas}));
       }},
       {text: 'Não'}
     ]);
@@ -53,7 +64,7 @@ export default class HomeScreen extends React.Component<AppProps, AppState> {
             <FlatList 
                 data={this.state.tarefas}
                 extraData={this.state.tarefas}
-                keyExtractor={(t) => t.id}
+                keyExtractor={(t) => t.id.toString()}
                 renderItem={({item}) => (
                     <ItemTarefa tarefa={item} onEditar={(tarefa)=>this.props.navigation.navigate('tarefaEdicao', {tarefa})} onExcluir={(id)=>this.excluir(id)}/>
                 )}    

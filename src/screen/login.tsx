@@ -4,6 +4,7 @@ import { Input, Button } from 'react-native-elements';
 import InputRound from './../components/input-round';
 import { AlertCustom } from '../components/alert-custom';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import { UsuariosProviders } from '../providers/usuarios';
 
 export interface AppProps {
     navigation: any;
@@ -14,10 +15,13 @@ export interface AppState {
     email:string;
     senha:string;
     modalEstaAberto:boolean;
-    cadastro:{email:string, senha:string};
+    cadastro:{nome:string, email:string, senha:string};
 }
 
 export default class LoginScreen extends React.Component<AppProps, AppState> {
+
+  private usuario = new UsuariosProviders();
+
   constructor(props: AppProps) {
     super(props);
     this.state = {
@@ -25,6 +29,7 @@ export default class LoginScreen extends React.Component<AppProps, AppState> {
       senha:'',
       modalEstaAberto:false,
       cadastro: {
+        nome: '',
         email:'',
         senha:''
       }
@@ -32,8 +37,10 @@ export default class LoginScreen extends React.Component<AppProps, AppState> {
   }
 
   /**Função responsável por fazer o login do usuário */
-  public logar() {
-    if(this.state.email.trim() == 'teste@teste.com' && this.state.senha == '123456')
+  public async logar() {
+    let resposta = await this.usuario.logar(this.state.email, this.state.senha);
+
+    if (resposta)
       this.props.navigation.navigate('home', {email: this.state.email});
     else {
       if (Platform.OS == 'android')
@@ -46,10 +53,16 @@ export default class LoginScreen extends React.Component<AppProps, AppState> {
 
 
   /** Função que permite cadastrar novos usuarios */
-  public cadastrar() {
-    //Depois será implementado
+  public async cadastrar() {
+    //Fecha o Modal
     this.setState({modalEstaAberto:false});
-    console.log(this.state.cadastro);
+
+    //Tenta cadastrar o usuário
+    let resposta = await this.usuario.cadastrar(this.state.cadastro);
+    if (resposta)
+      ToastAndroid.show('Cadastrado com sucesso', ToastAndroid.SHORT);
+    else
+      ToastAndroid.show('Não foi possível cadastrar usuário', ToastAndroid.SHORT)
   }
 
   public render() {
@@ -77,6 +90,7 @@ export default class LoginScreen extends React.Component<AppProps, AppState> {
               onCancelar={()=> this.setState({modalEstaAberto:false})}
               onConfirmar={()=> this.cadastrar()}>
                 <Text>Criar nova conta</Text>
+                <Input placeholder="Digite um nome" onChangeText={(nome) => this.setState({cadastro: {...this.state.cadastro, nome}})}/>
                 <Input placeholder="Digite um email" onChangeText={(email) => this.setState({cadastro: {...this.state.cadastro, email}})}/>
                 <Input placeholder="Digite uma senha" secureTextEntry onChangeText={(senha) => this.setState({cadastro: {...this.state.cadastro, senha}})}/>
             </AlertCustom>
