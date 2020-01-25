@@ -4,12 +4,23 @@ import { Input, Button } from 'react-native-elements';
 
 export interface AppProps {}
 
-export interface AppState {}
-
+//Interface que define quais valores o state pode receber
+export interface AppState {
+    email:string;
+    senha:string;
+  }
 export default class LoginScreen extends React.Component<AppProps, AppState> {
   constructor(props: AppProps) {
     super(props);
-    this.state = {};
+    this.state = {email:'', senha:''}
+  }
+
+  /**Função responsável por fazer o login do usuário */
+  public logar() {
+    if(this.state.email.trim() == 'teste@teste.com' && this.state.senha == '123456')
+      console.log('Logado com sucesso');
+    else 
+      console.log ('Email ou senha incorreta!');
   }
 
   public render() {
@@ -23,6 +34,7 @@ export default class LoginScreen extends React.Component<AppProps, AppState> {
                 <Input placeholder='Digite seu e-mail'  
                 leftIcon={{name:'person', color:'white'}}
                 inputContainerStyle={styles.containerInput}
+                onChangeText={email => this.setState({email})}
                 inputStyle={{color:'white'}}
                 />
 
@@ -30,9 +42,10 @@ export default class LoginScreen extends React.Component<AppProps, AppState> {
                 leftIcon={{name:'lock', color:'white'}}
                 inputContainerStyle={styles.containerInput}
                 inputStyle={{color:'white'}}
+                onChangeText={senha => this.setState({senha})}
                 secureTextEntry={true} />
 
-                <Button title="Logar"  buttonStyle={{borderRadius:30}} raised={true} />
+                <Button title="Logar" onPress={() => this.logar()}  buttonStyle={{borderRadius:30}} raised={true} />
 
                 <Text style={styles.cadastrar}>Não possui conta? Clique aqui para se cadastrar</Text>
 
