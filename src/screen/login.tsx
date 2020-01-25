@@ -35,7 +35,7 @@ export default class LoginScreen extends React.Component<AppProps, AppState> {
                 <Text style={styles.logo}>APP</Text>
 
                 <InputRound placeholder="Digite seu email" icone="person" onChangeText={(email) => this.setState({email})} />
-                <InputRound placeholder="Digite sua senha" icone="lock" onChangeText={(senha) => this.setState({senha})}/>
+                <InputRound placeholder="Digite sua senha" icone="lock" onChangeText={(senha) => this.setState({senha})} isPassword/>
 
                 <Button title="Logar" onPress={() => this.logar()}  buttonStyle={{borderRadius:30}} raised={true} />
 

@@ -8,6 +8,7 @@ export interface AppProps {
     icone:string;
     placeholder:string;
     onChangeText?(texto:string);
+    isPassword?: boolean
 }
 
 /**
@@ -22,6 +23,7 @@ export default (props: AppProps) => (
             leftIcon={{name:props.icone, color:'white'}}
             inputContainerStyle={styles.containerInput}
             onChangeText={(texto) => props.onChangeText(texto)}
+            secureTextEntry={props.isPassword}
             inputStyle={{color:'white'}} />
     </View>
 )

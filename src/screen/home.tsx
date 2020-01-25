@@ -22,7 +22,7 @@ export default class HomeScreen extends React.Component<AppProps, AppState> {
     return (
       <View>
          <Text>Email:{this.props.navigation.getParam('email')}</Text>
-         <Button onPress={() => this.props.navigation.goBack()} title="Voltar" />
+         <Button onPress={() => this.props.navigation.navigate('tarefaEdicao')} title="Tarefa" />
       </View>
     );
   }
