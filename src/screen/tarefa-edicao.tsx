@@ -6,6 +6,8 @@ import { Button, Input, Image } from 'react-native-elements';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from 'moment'
 import Tarefa from '../models/tarefa';
+import * as Permissions from 'expo-permissions';
+import * as ImagePicker from 'expo-image-picker';
 
 export interface AppProps {
     navigation:any;
@@ -32,7 +34,36 @@ export default class TarefaEdicaoScreen extends React.Component<AppProps, AppSta
   }
 
   /** Função responsável por tirar foto do Celular */
-  abrirCamera() {
+  async abrirCamera() {
+    
+    let permissao = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+    if (permissao.status == 'granted') {
+      //Tenho permissão de usar camera
+      //launchImageLibraryAsync() para buscar da galeria
+      let foto:any = await ImagePicker.launchCameraAsync({
+        allowsEditing: true,
+        aspect: [4,3],
+        base64: true,
+        mediaTypes: ImagePicker.MediaTypeOptions.All,
+        quality: 0.3
+      });
+
+      if (!foto.cancelled) { 
+        //Altera os dados de tarefa
+        let {tarefa} = this.state;
+        
+        // Salva a Foto como Base64 (String) 
+        tarefa.imagem = 'data:image/jpeg;base64,'+foto.base64;
+        
+        //Salva o Caminho a Foto no Smartphone
+        // tarefa.imagem = foto.uri; //Busca o caminho temporario da foto 
+        
+        //Opcional
+        //CameraRoll.saveToCameraRoll(foto.uri); //Salva a foto na galeria
+
+        this.setState({tarefa});
+      }
+    }
   }
 
   /** Função responsável por salvar as modificações na tarefa */
@@ -43,11 +74,13 @@ export default class TarefaEdicaoScreen extends React.Component<AppProps, AppSta
   guardaData(event, date) {
 
     if (date != undefined) {
-        this.setState({
-            data:date,
-            tarefa: {...this.state.tarefa, data:moment(date).format('DD/MM/YYYY')},
-            exibirCalendario: false
-        })
+      let {tarefa} = this.state
+      tarefa.data = moment(date).format('DD/MM/YYYY')
+      this.setState({
+          data:date,
+          tarefa,
+          exibirCalendario: false
+      })
     }
   }
 
@@ -82,7 +115,8 @@ export default class TarefaEdicaoScreen extends React.Component<AppProps, AppSta
               {/* Imagem usada para tirar Foto */}
               <View style={{alignItems:'center'}}>
                 <TouchableOpacity onPress={this.abrirCamera.bind(this)}>
-                  <Image source={require('./../../assets/imgs/camera_on.png')} style={[styles.img]}/>
+                  <Image source={(this.state.tarefa.imagem ? {uri:this.state.tarefa.imagem} :
+	      		                      require('./../../assets/imgs/camera_on.png'))} style={[styles.img]}/>
                 </TouchableOpacity>
               </View>
 
