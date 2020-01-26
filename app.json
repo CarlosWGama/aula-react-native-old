@@ -25,6 +25,11 @@
     ],
     "ios": {
       "supportsTablet": true
+    },
+    "android": {
+      "package": "br.com.carloswgama.reactnative",
+      "versionCode":1,
+      "googleServicesFile": "./google-services.json"
     }
   }
 }
