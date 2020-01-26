@@ -5,6 +5,7 @@ import { Fab } from '../components/fab';
 import Tarefa from '../models/tarefa';
 import { ItemTarefa } from '../components/item-tarefa';
 import { FlatList } from 'react-native-gesture-handler';
+import { TarefasProvider } from '../providers/tarefa';
 
 export interface AppProps {
     navigation: any; 
@@ -20,20 +21,27 @@ export interface AppState {
  * Essa tela irá listar todas tarefas cadastradas pelo usuário
  */
 export default class HomeScreen extends React.Component<AppProps, AppState> {
+
+  private tarefaProvider = new TarefasProvider();
+
   constructor(props: AppProps) {
     super(props);
     this.state = { 
       tarefas: [ ]
     };
+    //Disabilita o alerta por causa do Firebase Real Time Database
+    console.disableYellowBox = true;
   }
-
+  
   
   /** Função chamada assim que a página é criadda pela primeira vez */
   componentDidMount() {
+    
     //Listener que é chamado sempre que a página sendo exibida
     this.props.navigation.addListener('didFocus', () => {
-      let tarefas = []
-      this.setState({tarefas})
+      this.tarefaProvider.buscarTodos().then(tarefas => {
+        this.setState({tarefas})
+      })
     })
   }
 
@@ -44,7 +52,10 @@ export default class HomeScreen extends React.Component<AppProps, AppState> {
   public excluir(id) {
     Alert.alert('Excluir Tarefa', 'Deseja realmente excluir essa tarefa?', [
       {text:'Sim', onPress:() => {
-        console.log('Excluindo o Item');
+        this.tarefaProvider.excluir(id);
+        this.tarefaProvider.buscarTodos().then(tarefas => {
+          this.setState({tarefas})
+        })
       }},
       {text: 'Não'}
     ]);
