@@ -5,6 +5,7 @@ import InputRound from './../components/input-round';
 import { AlertCustom } from '../components/alert-custom';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import * as firebase from 'firebase';
+import { AdMobBanner, AdMobInterstitial, AdMobRewarded } from 'expo-ads-admob';
 
 export interface AppProps {
     navigation: any;
@@ -86,6 +87,41 @@ export default class LoginScreen extends React.Component<AppProps, AppState> {
                 <TouchableOpacity onPress={()=> this.setState({modalEstaAberto:true})}>
                   <Text style={styles.cadastrar}>Não possui conta? Clique aqui para se cadastrar</Text>
                 </TouchableOpacity>
+              
+                {/* PROPAGANDA TELA CHEIA */}
+                <Button title="Exibir Propaganda"
+                  type="outline"
+                  onPress={ async () => {
+                    //ID da propanda
+                    AdMobInterstitial.setAdUnitID('ca-app-pub-8890411738087560/6783588590'); 
+                    //Seta o ID do dispositivo que é usado para teste, para não contabilizar a propaganda
+                    AdMobInterstitial.setTestDeviceID('EMULATOR')
+                    //Solicita uma propaganda
+                    await AdMobInterstitial.requestAdAsync();
+                    //Exibe a propaganda
+                    await AdMobInterstitial.showAdAsync();
+                  }}
+                />
+
+                {/* PROPAGANDA COM DURAÇÃO */}
+                <Button title="Exibir Propaganda com Duração"
+                  onPress={ async () => {
+                    //ID da propanda
+                    AdMobRewarded.setAdUnitID('ca-app-pub-8890411738087560/2473287427'); 
+                    //Seta o ID do dispositivo que é usado para teste, para não contabilizar a propaganda
+                    AdMobRewarded.setTestDeviceID('EMULATOR')
+                    //Solicita uma propaganda
+                    await AdMobRewarded.requestAdAsync();
+                    //Exibe a propaganda (Com tempo para o usuário)
+                    await AdMobRewarded.showAdAsync();
+                  }}
+                />
+
+                  {/* PROPAGANDA POR BANNER */}
+                <AdMobBanner 
+                  bannerSize="smartBannerPortrait"
+                  adUnitID="ca-app-pub-8890411738087560/1818681309"
+                />
             </View>
 
             {/* Exibe o MODAL de Cadastrar Tarefa */}
