@@ -1,18 +1,19 @@
 import Tarefa from '../models/tarefa';
 import firebase from 'firebase';
-import 'firebase/database';
+import 'firebase/firestore'; //Não precisa no Ionic ou Web
+
 
 /**
  * Classe que dá acesso ao servidor com os dados da Tarefas
  */
 export class TarefasProvider {
 
-    private userID:string;
-    private db: firebase.database.Reference;
+    private userID: string;
+    private db: firebase.firestore.CollectionReference;
 
     constructor() {
         this.userID = firebase.auth().currentUser.uid;
-        this.db = firebase.database().ref('tarefas').child(this.userID);
+        this.db = firebase.firestore().collection('tarefas');
     }
   
     /**
@@ -20,9 +21,11 @@ export class TarefasProvider {
      * @param tarefa 
      */
     cadastrar(tarefa: Tarefa) {
-        tarefa.id = this.db.push().key;
+        let doc = this.db.doc();
         tarefa.usuarioID = this.userID;
-        this.db.child(tarefa.id).set(tarefa);
+        tarefa.id = doc.id;
+        if (!tarefa.imagem) delete tarefa.imagem
+        doc.set(tarefa);
     }
   
     /**
@@ -30,7 +33,7 @@ export class TarefasProvider {
      * @param tarefa 
      */
     editar(tarefa: Tarefa) {
-        this.db.child(tarefa.id).set(tarefa);
+        this.db.doc(tarefa.id).set(tarefa);
     }
   
     /**
@@ -38,18 +41,18 @@ export class TarefasProvider {
      * @param id 
      */
     excluir (id: string) {
-        this.db.child(id).remove();
+        this.db.doc(id).delete();
     }
   
     /**
      * BUsca todas tarefas de um usuário
      */
     async buscarTodos(): Promise<Tarefa[]> {
-        let snapshot = await this.db.once('value');
+        let resultado = await this.db.where('usuarioID', '==', this.userID).get();
         let tarefas = [];
-        snapshot.forEach(tarefa => {
-            tarefas.push(tarefa.val())
-        });
+        resultado.forEach(tarefa => {
+            tarefas.push(tarefa.data())
+        })
         return tarefas;
     }
   
@@ -58,8 +61,10 @@ export class TarefasProvider {
      * @param id 
      */
     async buscar(id: string): Promise<Tarefa> {
-        let snapshot = await this.db.child(id).once('value');
-        return snapshot.val();
+        let resultado = await this.db.doc(id).get();
+        let tarefa = null
+        if (resultado.exists) tarefa = resultado.data();
+        return tarefa;
     }
-  }
+}
   
