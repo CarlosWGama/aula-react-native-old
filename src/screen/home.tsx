@@ -23,11 +23,18 @@ export default class HomeScreen extends React.Component<AppProps, AppState> {
   constructor(props: AppProps) {
     super(props);
     this.state = { 
-      tarefas: [new Tarefa('Tarefa 1', '07/07/2019', '1'),
-               new Tarefa('Tarefa 2', '07/07/2019', '2'),
-               new Tarefa('Tarefa 3', '07/07/2019', '3')
-              ]
+      tarefas: [ ]
     };
+  }
+
+  
+  /** Função chamada assim que a página é criadda pela primeira vez */
+  componentDidMount() {
+    //Listener que é chamado sempre que a página sendo exibida
+    this.props.navigation.addListener('didFocus', () => {
+      let tarefas = []
+      this.setState({tarefas})
+    })
   }
 
   /**

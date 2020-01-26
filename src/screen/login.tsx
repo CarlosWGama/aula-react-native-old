@@ -4,6 +4,7 @@ import { Input, Button } from 'react-native-elements';
 import InputRound from './../components/input-round';
 import { AlertCustom } from '../components/alert-custom';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import * as firebase from 'firebase';
 
 export interface AppProps {
     navigation: any;
@@ -33,15 +34,17 @@ export default class LoginScreen extends React.Component<AppProps, AppState> {
 
   /**Função responsável por fazer o login do usuário */
   public logar() {
-    if(this.state.email.trim() == 'teste@teste.com' && this.state.senha == '123456')
-      this.props.navigation.navigate('home', {email: this.state.email});
-    else {
-      if (Platform.OS == 'android')
-        ToastAndroid.show('Email ou senha incorreta', 3000)
-      else
-        Alert.alert('Erro', 'Email ou senha incorreta');
-        //Se não informar botão, é adicionado um botão 'OK'
-    }
+    firebase.auth().signInWithEmailAndPassword(this.state.email,this.state.senha)
+      .then(() => {
+        this.props.navigation.navigate('home', {email: this.state.email});
+      })
+      .catch((erro) => {
+        console.log(erro)
+        if (Platform.OS == 'android')
+          ToastAndroid.show('Email ou senha incorreta', 3000)
+        else
+          Alert.alert('Erro', 'Email ou senha incorreta');
+      })
   }
 
 
@@ -50,6 +53,21 @@ export default class LoginScreen extends React.Component<AppProps, AppState> {
     //Depois será implementado
     this.setState({modalEstaAberto:false});
     console.log(this.state.cadastro);
+    let {cadastro} = this.state;
+    firebase.auth()
+        .createUserWithEmailAndPassword(cadastro.email, cadastro.senha)
+        .then(async (dados) =>  {
+          ToastAndroid.show('Cadastrado com sucesso', 2000)
+          let doc = await firebase.firestore().collection('usuarios').add(cadastro)
+          doc.id
+          doc.update({
+            id:doc.id
+          })
+          
+        }).catch((erro) => {
+          console.log(erro)
+          ToastAndroid.show('Não foi possível cadastro', 2000)
+        })
   }
 
   public render() {
